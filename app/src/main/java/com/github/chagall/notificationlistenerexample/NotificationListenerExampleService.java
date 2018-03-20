@@ -31,7 +31,7 @@ public class NotificationListenerExampleService extends NotificationListenerServ
         listen the notifications
      */
     private static final class ApplicationPackageNames {
-        public static final String FACEBOOK_PACK_NAME = "com.facebook.katana";
+        public static final String FACEBOOK_PACK_NAME = "com.google.android.apps.maps";
         public static final String FACEBOOK_MESSENGER_PACK_NAME = "com.facebook.orca";
         public static final String WHATSAPP_PACK_NAME = "com.whatsapp";
         public static final String INSTAGRAM_PACK_NAME = "com.instagram.android";
@@ -54,28 +54,30 @@ public class NotificationListenerExampleService extends NotificationListenerServ
     }
 
     @Override
-    public void onNotificationPosted(StatusBarNotification sbn){
+    public void onNotificationPosted(StatusBarNotification sbn) {
         int notificationCode = matchNotificationCode(sbn);
 
-        if(notificationCode != InterceptedNotificationCode.OTHER_NOTIFICATIONS_CODE){
-            Intent intent = new  Intent("com.github.chagall.notificationlistenerexample");
+        if (notificationCode != InterceptedNotificationCode.OTHER_NOTIFICATIONS_CODE) {
+            String info = matchNotificationCodeText(sbn);
+            Intent intent = new Intent("com.github.chagall.notificationlistenerexample");
+            intent.putExtra("Notification Text", info);
             intent.putExtra("Notification Code", notificationCode);
             sendBroadcast(intent);
         }
     }
 
     @Override
-    public void onNotificationRemoved(StatusBarNotification sbn){
+    public void onNotificationRemoved(StatusBarNotification sbn) {
         int notificationCode = matchNotificationCode(sbn);
 
-        if(notificationCode != InterceptedNotificationCode.OTHER_NOTIFICATIONS_CODE) {
+        if (notificationCode != InterceptedNotificationCode.OTHER_NOTIFICATIONS_CODE) {
 
             StatusBarNotification[] activeNotifications = this.getActiveNotifications();
 
-            if(activeNotifications != null && activeNotifications.length > 0) {
+            if (activeNotifications != null && activeNotifications.length > 0) {
                 for (int i = 0; i < activeNotifications.length; i++) {
                     if (notificationCode == matchNotificationCode(activeNotifications[i])) {
-                        Intent intent = new  Intent("com.github.chagall.notificationlistenerexample");
+                        Intent intent = new Intent("com.github.chagall.notificationlistenerexample");
                         intent.putExtra("Notification Code", notificationCode);
                         sendBroadcast(intent);
                         break;
@@ -88,18 +90,29 @@ public class NotificationListenerExampleService extends NotificationListenerServ
     private int matchNotificationCode(StatusBarNotification sbn) {
         String packageName = sbn.getPackageName();
 
-        if(packageName.equals(ApplicationPackageNames.FACEBOOK_PACK_NAME)
-                || packageName.equals(ApplicationPackageNames.FACEBOOK_MESSENGER_PACK_NAME)){
-            return(InterceptedNotificationCode.FACEBOOK_CODE);
-        }
-        else if(packageName.equals(ApplicationPackageNames.INSTAGRAM_PACK_NAME)){
-            return(InterceptedNotificationCode.INSTAGRAM_CODE);
-        }
-        else if(packageName.equals(ApplicationPackageNames.WHATSAPP_PACK_NAME)){
-            return(InterceptedNotificationCode.WHATSAPP_CODE);
-        }
-        else{
-            return(InterceptedNotificationCode.OTHER_NOTIFICATIONS_CODE);
+        if (packageName.equals(ApplicationPackageNames.FACEBOOK_PACK_NAME)
+                || packageName.equals(ApplicationPackageNames.FACEBOOK_MESSENGER_PACK_NAME)) {
+            sbn.getNotification().toString();
+            return (InterceptedNotificationCode.FACEBOOK_CODE);
+        } else if (packageName.equals(ApplicationPackageNames.INSTAGRAM_PACK_NAME)) {
+            return (InterceptedNotificationCode.INSTAGRAM_CODE);
+        } else if (packageName.equals(ApplicationPackageNames.WHATSAPP_PACK_NAME)) {
+            return (InterceptedNotificationCode.WHATSAPP_CODE);
+        } else {
+            return (InterceptedNotificationCode.OTHER_NOTIFICATIONS_CODE);
         }
     }
+
+
+    private String matchNotificationCodeText(StatusBarNotification sbn) {
+        String packageName = sbn.getPackageName();
+
+        if (packageName.equals(ApplicationPackageNames.FACEBOOK_PACK_NAME)
+                || packageName.equals(ApplicationPackageNames.FACEBOOK_MESSENGER_PACK_NAME)) {
+            return sbn.getNotification().toString();
+        } else {
+            return null;
+        }
+    }
+
 }

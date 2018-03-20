@@ -12,6 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 /**
  * MIT License
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView interceptedNotificationImageView;
     private ImageChangeBroadcastReceiver imageChangeBroadcastReceiver;
     private AlertDialog enableNotificationListenerAlertDialog;
+    private TextView notificationText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.github.chagall.notificationlistenerexample");
         registerReceiver(imageChangeBroadcastReceiver,intentFilter);
+        notificationText = (TextView) findViewById(R.id.notificationText);
     }
 
     @Override
@@ -90,6 +95,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    private void updateNotificationText(String s) {
+
+        notificationText.setText(s);
+    }
+
+
 
     /**
      * Is Notification Service Enabled.
@@ -125,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             int receivedNotificationCode = intent.getIntExtra("Notification Code",-1);
+            if(intent.getStringExtra("Notification Text") != null) {
+                updateNotificationText(intent.getStringExtra("Notification Text"));
+            }
             changeInterceptedNotificationImage(receivedNotificationCode);
         }
     }
